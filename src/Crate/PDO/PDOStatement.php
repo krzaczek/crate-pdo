@@ -27,7 +27,6 @@ use Closure;
 use Crate\Stdlib\ArrayUtils;
 use Crate\Stdlib\CollectionInterface;
 use Crate\Stdlib\CrateConst;
-use InvalidArgumentException;
 use IteratorAggregate;
 use PDOStatement as BasePDOStatement;
 
@@ -561,7 +560,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function closeCursor()
     {
-        $this->errorCode = 0;
+        $this->errorCode = null;
         $this->collection = null;
         return true;
     }

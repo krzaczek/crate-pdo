@@ -75,7 +75,7 @@ class Client implements ClientInterface
             $errorCode    = $responseBody['error']['code'];
             $errorMessage = $responseBody['error']['message'];
 
-            throw new RuntimeException($errorMessage, $errorCode);
+            throw new RuntimeException($errorMessage, $errorCode, null);
         }
 
         return new Collection(
