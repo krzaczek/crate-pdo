@@ -81,11 +81,18 @@ class PDO extends BasePDO implements PDOInterface
         }
 
         $servers = self::parseDSN($dsn);
+        $schema  = self::parseSchema($dsn);
         $uri     = self::computeURI($servers[0]);
 
-        $this->client = new Http\Client($uri, [
+        $client_options = [
             'timeout' => $this->attributes['timeout']
-        ]);
+        ];
+
+        if(!is_null($schema)) {
+            $client_options['defaults']['headers'] = ['_s' => $schema];
+        }
+
+        $this->client = new Http\Client($uri, $client_options);
 
         // Define a callback that will be used in the PDOStatements
         // This way we don't expose this as a public api to the end users.
@@ -121,6 +128,7 @@ class PDO extends BasePDO implements PDOInterface
      *
      * @param string $dsn The DSN string
      *
+     * @throws Exception\PDOException
      * @return array An array of host:port strings
      */
     private static function parseDSN($dsn)
@@ -132,6 +140,23 @@ class PDO extends BasePDO implements PDOInterface
         }
 
         return array_slice($matches, 1);
+    }
+
+    /**
+     * Extract schema from dsn
+     *
+     * @param $dsn
+     * @return null
+     */
+    private static function parseSchema($dsn)
+    {
+        $parts = preg_split('#\/#', $dsn);
+
+        if(count($parts) == 2) {
+            return $parts[1];
+        }
+
+        return null;
     }
 
     /**
